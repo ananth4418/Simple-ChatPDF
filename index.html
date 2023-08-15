@@ -1,0 +1,51 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat PDF App</title>
+</head>
+<body>
+    <h1>Chat PDF App</h1>
+    
+    <form id="pdf-form" enctype="multipart/form-data">
+        <input type="file" name="pdf">
+        <button type="submit">Upload PDF</button>
+    </form>
+
+    <div id="chat">
+        <input type="text" id="question" placeholder="Ask a question">
+        <button id="ask">Ask</button>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        document.getElementById('pdf-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.text);
+            });
+        });
+
+        document.getElementById('ask').addEventListener('click', function () {
+            const question = document.getElementById('question').value;
+            fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question: question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerText = data.response;
+            });
+        });
+    </script>
+</body>
+</html>
